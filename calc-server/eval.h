@@ -16,7 +16,7 @@ class Eval
     double exec(double value); //!< Метод выполняет операцию
 public:
     Eval(const QString &expr); //!< Конструктор принимает выражение и рассчитывает его
-    QString toString(); //!< Метод возвращает результат вычисления в виде строки
+    QString toString() const; //!< Метод возвращает результат вычисления в виде строки
 };
 
 #endif // EVAL_H

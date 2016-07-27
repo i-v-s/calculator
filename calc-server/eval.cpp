@@ -1,4 +1,5 @@
 #include "eval.h"
+#include <QRegularExpression>
 
 double Eval::exec(double value)
 {
@@ -17,10 +18,11 @@ double Eval::exec(double value)
 
 Eval::Eval(const QString &expr)
 {
+    const static QRegularExpression regular("^\\d*\\.?\\d+([eE][-+]?\\d+)?");
     bool neg = false, valuePresent = false;
     double value;
-    for(auto i = expr.begin(); i != expr.end(); ++i)
-        switch(char c = i->toLatin1()) // Проходим по строке
+    for(int idx = 0, end = expr.length(); idx < end; ++idx)
+        switch(char c = expr[idx].toLatin1()) // Проходим по строке
         {
         case '-':
             if(!valuePresent) { neg = !neg; break; } // Унарная операция, меняем знак
@@ -40,21 +42,20 @@ Eval::Eval(const QString &expr)
         default:
             if((c >= '0' && c <= '9') || c == '.')
             {
-                auto start = i;
-                for( ; i != expr.end(); ++i)
-                {
-                    char d = i->toLatin1();
-                    if(!((d >= '0' && d <= '9') || d == '.'))
-                        break;
-                }
+                if(valuePresent)
+                    throw std::logic_error("Syntax error");
+                QRegularExpressionMatch match = regular.match(QStringRef(&expr, idx, end - idx));
+                if(!match.hasMatch())
+                    throw std::logic_error("Value parsing error");
                 bool ok = false;
-                value = QString::fromRawData(start, i - start).toDouble(&ok);
-                if(!ok) throw std::logic_error("Value parsing error");
+                value = match.capturedRef().toDouble(&ok);
+                if(!ok)
+                    throw std::logic_error("Value parsing error");
                 if(neg) { neg = false; value = -value; }
                 valuePresent = true;
                 if(!stack.empty() && (stack.back().op == '*' || stack.back().op == '/'))
                     value = exec(value);
-                --i;
+                idx += match.capturedLength() - 1;
             }
             else throw std::logic_error("Unknown symbol");
         }
@@ -64,7 +65,7 @@ Eval::Eval(const QString &expr)
     result = value;
 }
 
-QString Eval::toString()
+QString Eval::toString() const
 {
     return QString("%1").arg(result);
 }
