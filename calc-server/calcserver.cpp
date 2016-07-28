@@ -14,6 +14,11 @@ CalcServer::CalcServer(quint16 port, QObject *parent) : QTcpServer(parent), text
     textOut << "Calc server listen port " << serverPort() << endl;
 }
 
+CalcServer::~CalcServer()
+{
+    close();
+}
+
 void CalcServer::incomingConnection(qintptr socketDescriptor)
 {
     CalcThread *thread = new CalcThread(socketDescriptor, this);

@@ -12,9 +12,11 @@ TEMPLATE = app
 SOURCES += main.cpp \
     calcserver.cpp \
     calcthread.cpp \
-    eval.cpp
+    eval.cpp \
+    calcsockethandler.cpp
 
 HEADERS += \
     calcserver.h \
     calcthread.h \
-    eval.h
+    eval.h \
+    calcsockethandler.h

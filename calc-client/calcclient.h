@@ -10,9 +10,10 @@ class CalcClient : public QObject
 {
     Q_OBJECT
     QTcpSocket tcpSocket;
-    QDataStream input;
+    size_t receivingSize; //!< Ожидаемый размер данных
 public:
     explicit CalcClient(QObject *parent = 0);
+    ~CalcClient();
     void connectRemote(const QString &host, int port); //!< Метод подключения к серверу
     void disconnect(); //!< Метод отключения от сервера
     QString peer(); //!< Метод, возвращающий имя и порт сервера
@@ -23,8 +24,8 @@ signals:
 public slots:
     void sendExpression(const QString &expression); //!< Слот отправки выражения для расчёта
 private slots:
-    void error(QAbstractSocket::SocketError socketError);
-    void readData();
+    void error(QAbstractSocket::SocketError socketError); //!< Слот обработки ошибок сокета
+    void readData(); //!< Слот приёма данных
 };
 
 #endif // CALCCLIENT_H

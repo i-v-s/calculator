@@ -10,6 +10,7 @@ class CalcServer : public QTcpServer
     QTextStream textOut; //!< Текстовый исходящий поток
 public:
     CalcServer(quint16 port, QObject *parent = 0);
+    ~CalcServer();
 protected:
     void incomingConnection(qintptr socketDescriptor) Q_DECL_OVERRIDE;
 };

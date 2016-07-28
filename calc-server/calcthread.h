@@ -3,22 +3,16 @@
 #include <QThread>
 #include <QTcpSocket>
 #include <QDataStream>
+#include <QScopedPointer>
 
-//! Класс потока, обслуживающего одно соединение и выполняющего расчёты
+//! Класс потока, обслуживающего соединение с клиентом
 class CalcThread : public QThread
 {
     Q_OBJECT
-    QTextStream textOut; //!< Текстовый исходящий поток
-    QDataStream dataStream;
+    const int socketDescriptor;
 public:
     CalcThread(int socketDescriptor, QObject *parent);
+    ~CalcThread();
     void run() Q_DECL_OVERRIDE;
-signals:   
-    void error(QTcpSocket::SocketError socketError);
-private:
-    int socketDescriptor;
-    QString calculate(const QString &expression); //!< Метод расчёта выражения
-private slots:
-    void readData();
 };
 #endif // CALCTHREAD_H
